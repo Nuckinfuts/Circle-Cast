@@ -1,0 +1,148 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Cast.lua" />
+
+	<Frame name="CastRingTemplate" virtual="true" hidden="false">
+		<Size x="256" y="256" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parent_Background" file="Interface\AddOns\Circle_Cast2\img\bg">
+					<Size x="256" y="256" />
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_Part1" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="0" g="1.0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Part2" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="0" g="1.0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Part3" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="0" g="1.0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Part4" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="0" g="1.0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Slice" file="Interface\AddOns\Circle_Cast2\img\slicer">
+					<Size x="128" y="128" />
+					<Color r="0" g="1.0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Part1" relativePoint="TOPLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Red" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="1" g="0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Part2" relativePoint="TOPLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Blue" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="0" g="0" b="1" a="0.5" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Part3" relativePoint="TOPLEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parent_Gloss" file="Interface\AddOns\Circle_Cast2\img\gloss">
+					<Size x="256" y="256" />
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="CastRingTemplate_Simple" virtual="true" hidden="false">
+		<Size x="256" y="256" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_Part1" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="0" g="1.0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Part2" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="0" g="1.0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Part3" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="0" g="1.0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Part4" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="0" g="1.0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Slice" file="Interface\AddOns\Circle_Cast2\img\slicer">
+					<Size x="128" y="128" />
+					<Color r="0" g="1.0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Part1" relativePoint="TOPLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Red" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="1" g="0" b="0" a="0.5" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Part2" relativePoint="TOPLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parent_Blue" file="Interface\AddOns\Circle_Cast2\img\segment">
+					<Size x="128" y="128" />
+					<Color r="0" g="0" b="1" a="0.5" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Part3" relativePoint="TOPLEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="Circle_Cast_Events" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				Circle_Cast2_OnLoad(self, "player", true)
+			</OnLoad>
+			<OnEvent>
+				Circle_Cast2_OnEvent(self, event, ...)
+			</OnEvent>
+			<OnUpdate>
+				Circle_Cast2_OnUpdate(self, elapsed)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

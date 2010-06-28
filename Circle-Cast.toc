@@ -1,0 +1,8 @@
+## Interface: 30300
+## Title: Circle Cast 2
+## Author: Greg Flynn (Nuckin)
+## Notes: A Circular Casting Bar
+## Version: 30200-2.6
+## SavedVariables: CC2Options
+Cast.xml
+Cast.lua
