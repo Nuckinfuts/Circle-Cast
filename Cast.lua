@@ -88,7 +88,7 @@ Circle_Cast2_Default = {
 };
 
 CIRCLE_CAST_TOC = 30300;
-CIRCLE_CAST_VER = "v"..CIRCLE_CAST_TOC.."-2.6";
+CIRCLE_CAST_VER = "v"..CIRCLE_CAST_TOC.."-3.0 Alpha";
 
 local _G = _G;
 local loaded = nil;
