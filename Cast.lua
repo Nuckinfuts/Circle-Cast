@@ -108,8 +108,23 @@ function Circle_Cast_CreateFrames()
 	--Circle_Cast_SetupRing("Pet_Ring")
 end
 
+function Circle_Cast_ApplySettings(name)
+    local opt = CircleCast_Global[name]
+    local ring = _G[name]
+    
+    --position
+    ring:ClearAllPoints()
+    ring:SetParent(opt["p"])
+    ring:SetPoint("CENTER", opt["p"], "CENTER", opt["x"], opt["y"])
+    
+    --color
+    for i = 1, 7 do
+        _G[name..CC_parts[i]]:SetVertexColor(Circle_Cast_GetColor(name));
+    end
+end
+
 function Circle_Cast_SetupRing(name)
-	local opt = CircleCast_Global[name];
+	local opt = CircleCast_Global[name]
 	local ring = CreateFrame("Frame", name, _G[opt["p"]], "CastRingTemplate")
 
 	--fix parts
@@ -285,11 +300,12 @@ function SlashCmdList.CCSLASH(msg, editbox)
 			name = "Player_Ring";
 		end
 			
-		obj = _G[name];
+		--obj = _G[name];
 		CircleCast_Global[name]["x"] = CircleCast_Global[name]["x"] + x;
 		CircleCast_Global[name]["y"] = CircleCast_Global[name]["y"] + y;
-		obj:ClearAllPoints();
-		obj:SetPoint("CENTER", _G[CircleCast_Global[name]["p"]], "CENTER", CircleCast_Global[name]["x"], CircleCast_Global[name]["y"])
+		Circle_Cast_ApplySettings(name)
+		--obj:ClearAllPoints();
+		--obj:SetPoint("CENTER", _G[CircleCast_Global[name]["p"]], "CENTER", CircleCast_Global[name]["x"], CircleCast_Global[name]["y"])
 	elseif msg:match("color %a+ %d+ %d+ %d+ %d+") then
 		-- /CC2 COLOR [PLAYER or TARGET or PING] [RED] [GREEN] [BLUE] [ALPHA]
 		msg       = msg:sub(7);
@@ -306,15 +322,34 @@ function SlashCmdList.CCSLASH(msg, editbox)
 		local b   = msg:sub(1, loc-1);
 		msg       = msg:sub(loc+1);
 		local a   = msg;
-		print("Object : "..obj);
-		print("r/g/b/a: "..r.."/"..g.."/"..b.."/"..a)
+		--print("Object : "..obj);
+		--print("r/g/b/a: "..r.."/"..g.."/"..b.."/"..a)
+		
+		local name;
+		if obj == "target" then
+		    name = "Target_Ring"
+		else
+		    name = "Player_Ring"
+		end
+		
+		local opt = CircleCast_Global[name]
+		opt["r"] = r
+		opt["g"] = g
+		opt["b"] = b
+		opt["a"] = a
+		
+		Circle_Cast_ApplySettings(name)
 	elseif msg == "reset" then
+	    --This should be changed
+	    --CircleCast_Global = Circle_Cast_Default
+	    --then re-apply settings
+	
 		local objects = {"Player_Ring", "Target_Ring"};
 		
 		for obj in objects do
-			CircleCast_Global[obj]["x"] = Circle_Cast2_Default[obj]["x"];
-			CircleCast_Global[obj]["y"] = Circle_Cast2_Default[obj]["y"];
-			CircleCast_Global[obj]["s"] = Circle_Cast2_Default[obj]["s"];
+			CircleCast_Global[obj]["x"] = Circle_Cast_Default[obj]["x"];
+			CircleCast_Global[obj]["y"] = Circle_Cast_Default[obj]["y"];
+			CircleCast_Global[obj]["s"] = Circle_Cast_Default[obj]["s"];
 			_G[obj]:ClearAllPoints();
 			_G[obj]:SetPoint("CENTER", _G[CircleCast_Global[obj]["p"]], "CENTER", CircleCast_Global[obj]["x"], CircleCast_Global[obj]["y"])
 		end
