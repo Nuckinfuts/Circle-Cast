@@ -2,7 +2,8 @@
 ## Title: Circle Cast
 ## Author: Greg Flynn (Nuckin)
 ## Notes: A Circular Casting Bar
-## Version: 30300-3.0 Alpha
-## SavedVariables: CC2Options
-Cast.xml
+## Version: 3.0 Alpha
+## SavedVariables: CircleCast_Global
+## SavedVariablesPerCharacter: CircleCast_Local
 Cast.lua
+Cast.xml
