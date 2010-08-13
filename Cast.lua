@@ -376,7 +376,7 @@ function SlashCmdList.CCSLASH(msg, editbox)
 	    Circle_Cast_SpellCast_TargetStart(_G["Circle_Cast_Events"], GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
 	    Circle_Cast_SpellCast_PetStart(_G["Circle_Cast_Events"], GetTime(), 10000)
 	else
-		print("Invalid parameter to Circle-Cast");
+		ccprint("Invalid parameter to Circle-Cast");
 	end
 end
 
