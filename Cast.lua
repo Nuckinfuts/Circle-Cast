@@ -452,11 +452,11 @@ function Circle_Cast_OnEvent(self, event, unit)
 	elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		local _, _, text, icon, startTime, endTime = UnitChannelInfo(unit)
 		if unit == "player" and not self.channeling and not self.casting and startTime then
-			Circle_Cast2_SpellChannel_Start(self, startTime, text, endTime - startTime, icon)
+			Circle_Cast_SpellChannel_Start(self, startTime, text, endTime - startTime, icon)
 		elseif unit == "target" and startTime then
-			Circle_Cast2_SpellChannel_TargetStart(self, startTime, text, endTime - startTime, icon)
+			Circle_Cast_SpellChannel_TargetStart(self, startTime, text, endTime - startTime, icon)
 		elseif unit == "pet" and starTime then
-		    Circle_Cast2_SpellChannel_PetStart(self, startTime, endTime - startTime)
+		    Circle_Cast_SpellChannel_PetStart(self, startTime, endTime - startTime)
 		end
 	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
 		local _, _, _, _, _, endTime = UnitChannelInfo(unit);
