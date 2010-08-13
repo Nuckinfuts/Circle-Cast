@@ -1,11 +1,12 @@
 Circle_Cast_Default = {
 	["blizz"] = false,
+	["debug"] = false,
 	["Player_Ring"] = {
 		["r"] = 0.0,    --Red
 		["g"] = 0.5, --Green
 		["b"] = 1.0, --Blue
 		["a"] = 0.3, --Alpha
-		["s"] = 0.9, --Scale
+		["s"] = 0.7, --Scale
 		["x"] = 0,          --X Coordinate Offset from parent
 		["y"] = 0,          --Y Coordinate Offset from parent
 		["p"] = "UIParent", --Frame's Parent
@@ -39,12 +40,23 @@ Circle_Cast_Default = {
 		["Text"] = nil,
 		},
 	-------------------
+	["Pet_Ring"] = {
+	    ["r"] = 1.0,
+	    ["g"] = 0.6,
+	    ["b"] = 0.4,
+	    ["a"] = 0.3,
+	    ["s"] = 0.59,
+	    ["x"] = 0,
+	    ["y"] = 0,
+	    ["p"] = "UIParent",
+	    },
+	-------------------
 	["Target_Ring"] = {
 		["r"] = 0.9,
 		["g"] = 0.9,
 		["b"] = 0.0,
 		["a"] = 0.3,
-		["s"] = 1.12,
+		["s"] = 0.85,
 		["x"] = 0,
 		["y"] = 0,
 		["p"] = "UIParent",
@@ -85,27 +97,17 @@ Circle_Cast_Default = {
 			["y"] = 0,
 			},
 		},
-	["Pet_Ring"] = {
-	    
-	    },
 };
 
-local _G = _G;
-local loaded = nil;
-local CC_parts = {
-	[1] = "_Part1",
-	[2] = "_Part2",
-	[3] = "_Part3",
-	[4] = "_Part4",
-	[5] = "_Slice",
-	[6] = "_Red",
-	[7] = "_Blue",
-}
+local _G = _G
+local CC_parts = {"_Part1", "_Part2", "_Part3", "_Part4", "_Slice", "_Red", "_Blue",}
+local CC_objs  = {"Player_Ring", "Target_Ring", "Pet_Ring"}
+local selF
 
 function Circle_Cast_CreateFrames()
-	Circle_Cast_SetupRing("Player_Ring")
-	Circle_Cast_SetupRing("Target_Ring")
-	--Circle_Cast_SetupRing("Pet_Ring")
+	for _,obj in pairs(CC_objs) do
+	    Circle_Cast_SetupRing(obj)
+	end
 end
 
 function Circle_Cast_ApplySettings(name)
@@ -118,9 +120,12 @@ function Circle_Cast_ApplySettings(name)
     ring:SetPoint("CENTER", opt["p"], "CENTER", opt["x"], opt["y"])
     
     --color
-    for i = 1, 7 do
-        _G[name..CC_parts[i]]:SetVertexColor(Circle_Cast_GetColor(name));
+    for _,part in pairs(CC_parts) do
+        _G[name..part]:SetVertexColor(Circle_Cast_GetColor(name));
     end
+    
+    --scale
+    ring:SetScale(opt["s"])
 end
 
 function Circle_Cast_SetupRing(name)
@@ -135,8 +140,8 @@ function Circle_Cast_SetupRing(name)
 	--Ping
 	if opt["Ping"] then
 		local ping = CreateFrame("Frame", name.."_Ping", ring, "CastRingTemplate_Simple");
-		for i = 1, 7 do
-			_G[name.."_Ping"..CC_parts[i]]:SetVertexColor(Circle_Cast_GetColor(name, "Ping"));
+		for _,part in pairs(CC_parts) do
+			_G[name.."_Ping"..part]:SetVertexColor(Circle_Cast_GetColor(name, "Ping"));
 		end
 		_G[name.."_Ping_Part2"]:SetTexCoord(0, 1, 1, 1, 0, 0, 1, 0);
 		_G[name.."_Ping_Part3"]:SetTexCoord(1, 1, 1, 0, 0, 1, 0, 0);
@@ -175,8 +180,8 @@ function Circle_Cast_SetupRing(name)
 	end
 	
 	--Color
-	for i = 1, 7 do
-		_G[name..CC_parts[i]]:SetVertexColor(Circle_Cast_GetColor(name));
+	for _,part in pairs(CC_parts) do
+		_G[name..part]:SetVertexColor(Circle_Cast_GetColor(name));
 	end
 	
 	--Scale
@@ -215,18 +220,16 @@ function Circle_Cast_OnLoad(self, unit, showTradeSkills)
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
 	self:RegisterEvent("UNIT_TARGET");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("ADDON_LOADED")
+	self:RegisterEvent("PLAYER_LOGOUT")
 
 	self.casting = nil;
 	self.channeling = nil;
 	self.targetCasting = nil;
 	self.targetChanneling = nil;
 	
+	selF = self
 	SLASH_CCSLASH1, SLASH_CCSLASH2 = '/cc', '/circlecast';
-	
-	--Old frame creation place
-	--Circle_Cast_CreateFrames();
 end
 
 function ccSlashVar(var)
@@ -253,33 +256,56 @@ end
 
 function SlashCmdList.CCSLASH(msg, editbox)
 	if msg == "help" or msg == "" then
-		print("### "..ccSlashTitle("Circle-Cast Configuration Help").." ###");
-		print(" - Commands: (all parameters and commands must be lowercase!)");
-		print(ccSlashStatic("/cc shift").." -- shift the rings position ("..ccSlashStatic("/cc shift help").." for more info)");
-		print(ccSlashStatic("/cc color").." -- select new colors for the rings("..ccSlashStatic("/cc color help").." for more info)")
-		print(ccSlashStatic("/cc reset").." -- restore default position and colors")
-	elseif msg == "shift help" or msg == "shift"	then
-		print("### "..ccSlashTitle("Circle-Cast Shift Help").." ###");
-		print(ccSlashStatic("/CC SHIFT").." "..ccSlashVar("DIRECTION OBJECT PIXELS"));
-		print(ccSlashVar("DIRECTION").." must be up, down, left or right")
-		print(ccSlashVar("OBJECT").." must be player or target");
-		print(ccSlashVar("PIXELS").." must be an integer");
+		ccprint("### "..ccSlashTitle("Circle-Cast Configuration Help").." ###")
+		ccprint(" - Commands: (all parameters and commands must be lowercase!)")
+		ccprint(ccSlashStatic("/cc shift").." -- shift the rings position ("..ccSlashStatic("/cc shift help").." for more info)")
+		ccprint(ccSlashStatic("/cc color").." -- select new colors for the rings ("..ccSlashStatic("/cc color help").." for more info)")
+		ccprint(ccSlashStatic("/cc scale").." -- set the scale of the rings ("..ccSlashStatic("/cc scale help").." for more info)")
+		ccprint(ccSlashStatic("/cc show") .." -- shows all frames to ease configuration")
+		ccprint(ccSlashStatic("/cc reset").." -- restore default position and colors")
+	elseif msg == "scale help" or msg == "scale" then
+	    ccprint("### "..ccSlashTitle("Circle-Cast Scale Help").." ###")
+	    ccprint(ccSlashStatic("/CC SCALE").." "..ccSlashVar("OBJECT AMOUNT"))
+	    ccprint(ccSlashVar("OBJECT").." must be player or target")
+	    ccprint(ccSlashVar("AMOUNT").." must be a decimal value (2.0 = 200%)")
+	elseif msg == "shift help" or msg == "shift" then
+		ccprint("### "..ccSlashTitle("Circle-Cast Shift Help").." ###")
+		ccprint(ccSlashStatic("/CC SHIFT").." "..ccSlashVar("DIRECTION OBJECT PIXELS"))
+		ccprint(ccSlashVar("DIRECTION").." must be up, down, left or right")
+		ccprint(ccSlashVar("OBJECT").." must be player or target")
+		ccprint(ccSlashVar("PIXELS").." must be an integer")
 	elseif msg == "color help" or msg == "color" then
-		print("### "..ccSlashTitle("Cicle-Cast Color Help").." ###");
-		print(ccSlashStatic("/CC COLOR").." "..ccSlashVar("OBJECT RED GREEN BLUE ALPHA"));
-		print(ccSlashVar("OBJECT").." must be player, target, or ping");
-		print(ccSlashVar("RED").."/"..ccSlashVar("GREEN").."/"..ccSlashVar("BLUE").."/"..ccSlashVar("ALPHA").." must all be a number between or equal to 0 and 255");
-		print(ccSlashVar("ALPHA").." is the level of transparency, 0 being completely clear and 255 being completely solid");
+		ccprint("### "..ccSlashTitle("Cicle-Cast Color Help").." ###")
+		ccprint(ccSlashStatic("/CC COLOR").." "..ccSlashVar("OBJECT RED GREEN BLUE ALPHA"))
+		ccprint(ccSlashVar("OBJECT").." must be player, target, or ping")
+		ccprint(ccSlashVar("RED").."/"..ccSlashVar("GREEN").."/"..ccSlashVar("BLUE").."/"..ccSlashVar("ALPHA").." must all be a number between or equal to 0 and 255")
+		ccprint(ccSlashVar("ALPHA").." is the level of transparency, 0 being completely clear and 255 being completely solid")
+	elseif msg:match("scale %a+ %d+") then
+	    msg       = msg:sub(7)
+	    local loc = msg:find(" ")
+	    local obj = msg:sub(1, loc-1)
+	    local scl = msg:sub(loc+1)
+	    
+	    if obj == "target" then
+	        obj = "Target_Ring"
+	    elseif obj == "pet" then
+	        obj = "Pet_Ring"
+	    else
+	        obj = "Player_Ring"
+	    end
+	    
+	    CircleCast_Global[obj]["s"] = scl
+	    Circle_Cast_ApplySettings(obj)
 	elseif msg:match("shift %a+ %a+ %d+") then
 		-- /CC2 SHIFT [DIRECTION] [PLAYER or TARGET] [PIXELS]
-		msg          = msg:sub(7);
-		local loc    = msg:find(" ");
-		local direct = msg:sub(1, loc-1);
-		msg          = msg:sub(loc+1);
-		loc          = msg:find(" ");
-		local obj    = msg:sub(1, loc-1);
-		msg          = msg:sub(loc+1);
-		local px     = msg;
+		msg          = msg:sub(7)
+		local loc    = msg:find(" ")
+		local direct = msg:sub(1, loc-1)
+		msg          = msg:sub(loc+1)
+		loc          = msg:find(" ")
+		local obj    = msg:sub(1, loc-1)
+		msg          = msg:sub(loc+1)
+		local px     = msg
 		
 		local x = 0;
 		local y = 0;
@@ -295,17 +321,16 @@ function SlashCmdList.CCSLASH(msg, editbox)
 		
 		local name;
 		if obj == "target" then
-			name = "Target_Ring";
+			name = "Target_Ring"
+		elseif obj == "pet" then
+		    name = "Pet_Ring"
 		else
-			name = "Player_Ring";
+			name = "Player_Ring"
 		end
-			
-		--obj = _G[name];
+		
 		CircleCast_Global[name]["x"] = CircleCast_Global[name]["x"] + x;
 		CircleCast_Global[name]["y"] = CircleCast_Global[name]["y"] + y;
 		Circle_Cast_ApplySettings(name)
-		--obj:ClearAllPoints();
-		--obj:SetPoint("CENTER", _G[CircleCast_Global[name]["p"]], "CENTER", CircleCast_Global[name]["x"], CircleCast_Global[name]["y"])
 	elseif msg:match("color %a+ %d+ %d+ %d+ %d+") then
 		-- /CC2 COLOR [PLAYER or TARGET or PING] [RED] [GREEN] [BLUE] [ALPHA]
 		msg       = msg:sub(7);
@@ -322,12 +347,12 @@ function SlashCmdList.CCSLASH(msg, editbox)
 		local b   = msg:sub(1, loc-1);
 		msg       = msg:sub(loc+1);
 		local a   = msg;
-		--print("Object : "..obj);
-		--print("r/g/b/a: "..r.."/"..g.."/"..b.."/"..a)
 		
 		local name;
 		if obj == "target" then
 		    name = "Target_Ring"
+		elseif obj == "pet" then
+		    name = "Pet_Ring"
 		else
 		    name = "Player_Ring"
 		end
@@ -340,26 +365,23 @@ function SlashCmdList.CCSLASH(msg, editbox)
 		
 		Circle_Cast_ApplySettings(name)
 	elseif msg == "reset" then
-	    --This should be changed
-	    --CircleCast_Global = Circle_Cast_Default
-	    --then re-apply settings
-	
-		local objects = {"Player_Ring", "Target_Ring"};
-		
-		for obj in objects do
-			CircleCast_Global[obj]["x"] = Circle_Cast_Default[obj]["x"];
-			CircleCast_Global[obj]["y"] = Circle_Cast_Default[obj]["y"];
-			CircleCast_Global[obj]["s"] = Circle_Cast_Default[obj]["s"];
-			_G[obj]:ClearAllPoints();
-			_G[obj]:SetPoint("CENTER", _G[CircleCast_Global[obj]["p"]], "CENTER", CircleCast_Global[obj]["x"], CircleCast_Global[obj]["y"])
+		CircleCast_Global = Circle_Cast_Default
+		for _,obj in pairs(CC_objs) do
+			Circle_Cast_ApplySettings(obj)
 		end
+	elseif msg == "show" then
+	    CircleCast_Global["debug"] = true
+	    
+	    Circle_Cast_SpellCast_Start(_G["Circle_Cast_Events"], GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
+	    Circle_Cast_SpellCast_TargetStart(_G["Circle_Cast_Events"], GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
+	    Circle_Cast_SpellCast_PetStart(_G["Circle_Cast_Events"], GetTime(), 10000)
 	else
 		print("Invalid parameter to Circle-Cast");
 	end
 end
 
 function ccprint(msg)
-    print("<CircleCast> "..msg)
+    print("|cff008800<CircleCast>|r "..msg)
 end
 
 function Circle_Cast_OnEvent(self, event, unit)
@@ -383,53 +405,67 @@ function Circle_Cast_OnEvent(self, event, unit)
     	end
     	
     	Circle_Cast_CreateFrames()
+    elseif event == "PLAYER_LOGOUT" then
+        CircleCast_Global["debug"] = false
 	elseif event == "UNIT_SPELLCAST_START" then
-		local _, _, text, icon, startTime, endTime, _, notInterruptible = UnitCastingInfo(unit); 
+		local _, _, text, icon, startTime, endTime, _, notInterruptible = UnitCastingInfo(unit) 
 		if unit == "player" and not self.casting and not self.channeling and startTime then
-			Circle_Cast_SpellCast_Start(self, startTime, text, endTime - startTime, icon);
+			Circle_Cast_SpellCast_Start(self, startTime, text, endTime - startTime, icon)
 		elseif unit == "target" and startTime then
-			Circle_Cast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon, notInteruptable);
+			Circle_Cast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon, notInteruptable)
+		elseif unit == "pet" and startTime then
+		    Circle_Cast_SpellCast_PetStart(self, startTime, endTime - startTime)
 		end
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
 		if unit == "player" then
-			Circle_Cast_Reset(self);
+			Circle_Cast_Reset(self)
 		elseif unit == "target" then
-			Circle_Cast_Reset_Target(self);
+			Circle_Cast_Reset_Target(self)
+		elseif unit == "pet" then
+		    Circle_Cast_Reset_Pet(self)
 		end
 	--let's save the cheerleader...
 	elseif event == "UNIT_TARGET" and unit == "player" then
-		Circle_Cast_Reset_Target(self);
+		Circle_Cast_Reset_Target(self)
 		
 		if UnitExists("target") then
-			local _, _, text, icon, startTime, endTime = UnitCastingInfo("target");
+			local _, _, text, icon, startTime, endTime = UnitCastingInfo("target")
 			if startTime then
-				Circle_Cast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon);
+				Circle_Cast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon)
 			end
 		end
 	elseif event == "UNIT_SPELLCAST_DELAYED" then
 		local _, _, _, _, startTime, endTime = UnitCastingInfo(unit);
 		if unit == "player" and self.casting and startTime then
-			local delay = (startTime / 1000) - self.startTime;
-			self.startTime = self.startTime + delay;
-			self.maxValue = self.maxValue + delay;
+			local delay = (startTime / 1000) - self.startTime
+			self.startTime = self.startTime + delay
+			self.maxValue = self.maxValue + delay
 		elseif unit == "target" and self.casting_target and startTime then
-			local delay = (startTime / 1000) - self.startTime_target;
-			self.startTime_target = self.startTime_target + delay;
-			self.maxValue_target = self.maxValue_target + delay;
+			local delay = (startTime / 1000) - self.startTime_target
+			self.startTime_target = self.startTime_target + delay
+			self.maxValue_target = self.maxValue_target + delay
+		elseif unit == "pet" and self.casting_pet and startTime then
+		    local delay = (startTime / 1000) - self.startTime_pet
+			self.startTime_pet = self.startTime_pet + delay
+			self.maxValue_pet = self.maxValue_pet + delay
 		end
 	elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-		local _, _, text, icon, startTime, endTime = UnitChannelInfo(unit);
+		local _, _, text, icon, startTime, endTime = UnitChannelInfo(unit)
 		if unit == "player" and not self.channeling and not self.casting and startTime then
-			Circle_Cast2_SpellChannel_Start(self, startTime, text, endTime - startTime, icon);
+			Circle_Cast2_SpellChannel_Start(self, startTime, text, endTime - startTime, icon)
 		elseif unit == "target" and startTime then
-			Circle_Cast2_SpellChannel_TargetStart(self, startTime, text, endTime - startTime, icon);
+			Circle_Cast2_SpellChannel_TargetStart(self, startTime, text, endTime - startTime, icon)
+		elseif unit == "pet" and starTime then
+		    Circle_Cast2_SpellChannel_PetStart(self, startTime, endTime - startTime)
 		end
 	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
 		local _, _, _, _, _, endTime = UnitChannelInfo(unit);
 		if unit == "player" and self.channeling and endTime then
-			self.maxValue = endTime / 1000;
+			self.maxValue = endTime / 1000
 		elseif unit == "target" and self.channeling_target and endTime then
-			self.maxValue_target = endTime / 1000;
+			self.maxValue_target = endTime / 1000
+		elseif unit == "pet" and self.channeling_pet and endTime then
+		    self.maxValue_pet = endTime / 1000
 		end
 	end
 end
@@ -446,36 +482,55 @@ function Circle_Cast_Reset_Target(self)
 	_G["Target_Ring"]:Hide();
 end
 
+function Circle_Cast_Reset_Pet(self)
+    self.casting_pet = nil
+    self.channeling_pet = nil
+    _G["Pet_Target"]:Hide()
+end
+
 function Circle_Cast_OnUpdate(self, elapsed)
 	if self.casting or self.channeling then
 		local time = GetTime();
 		if (time > self.maxValue) then
 			time = self.maxValue
 		end
-		local timeLeft = math.floor((self.maxValue - time)*10)/10;
-		local v = (time - self.startTime) / (self.maxValue - self.startTime) * 100;
-		_G["Player_Ring_Timer"]:SetText(string.format("(%.1f)", timeLeft));
+		local timeLeft = math.floor((self.maxValue - time)*10)/10
+		local v = (time - self.startTime) / (self.maxValue - self.startTime) * 100
+		_G["Player_Ring_Timer"]:SetText(string.format("(%.1f)", timeLeft))
 		if self.casting and not self.channeling then
-			Circle_Cast_SetBarHeight(_G["Player_Ring"], v);
+			Circle_Cast_SetBarHeight(_G["Player_Ring"], v)
 		elseif self.channeling and not self.casting then
-			Circle_Cast_SetBarHeight(_G["Player_Ring"], 100-v);
+			Circle_Cast_SetBarHeight(_G["Player_Ring"], 100-v)
 		end
+	end
+	
+	if self.casting_pet or self.channeling_pet then
+	    local time = GetTime()
+	    if time > self.maxValue_pet then
+	        time = self.maxValue_pet
+	    end
+	    local v = (time - self.startTime_pet) / (self.maxValue_pet - self.startTime_pet) * 100
+	    if self.casting_pet and not self.channeling_pet then
+	        Circle_Cast_SetBarHeight(_G["Pet_Ring"], v)
+	    elseif self.channeling_pet and not self.casting_pet then
+	        Circle_Cast_SetBarHeight(_G["Pet_Ring"], 100-v)
+	    end
 	end
 
 	if self.casting_target or self.channeling_target then
 		local time = GetTime();
 		if (time > self.maxValue_target) then
-			time = self.maxValue_target;
+			time = self.maxValue_target
 		end
-		local timeLeft = self.maxValue_target - time;
-		local v = (time - self.startTime_target) / (self.maxValue_target - self.startTime_target) * 100;
+		local timeLeft = self.maxValue_target - time
+		local v = (time - self.startTime_target) / (self.maxValue_target - self.startTime_target) * 100
 
-		_G["Target_Ring_Text"]:SetText(self.spellname_target);
-		_G["Target_Ring_Timer"]:SetText(string.format("(%.1f)", timeLeft));
+		_G["Target_Ring_Text"]:SetText(self.spellname_target)
+		_G["Target_Ring_Timer"]:SetText(string.format("(%.1f)", timeLeft))
 		if self.casting_target and not self.channeling_target then
-			Circle_Cast_SetBarHeight(_G["Target_Ring"], v);
+			Circle_Cast_SetBarHeight(_G["Target_Ring"], v)
 		elseif self.channeling_target and not self.casting_target then
-			Circle_Cast_SetBarHeight(_G["Target_Ring"], 100-v);
+			Circle_Cast_SetBarHeight(_G["Target_Ring"], 100-v)
 		end
 	end
 end
@@ -697,6 +752,26 @@ function Circle_Cast_SpellChannel_Start(self, start, name, duration, icon)
 	Circle_Cast_SetBarHeight(_G["Player_Ring_Ping"], ping);
 end 
 
+function Circle_Cast_SpellCast_PetStart(self, start, duration)
+	self.startTime_pet  = start /1000;
+	self.maxValue_pet   = self.startTime + (duration / 1000);
+	self.casting_pet    = true;
+	self.channeling_pet = nil;
+	self.duration_pet   = floor(duration / 100) / 10;
+	
+	_G["Pet_Ring"]:Show();
+end
+
+function Circle_Cast_SpellChannel_PetStart(self, start, duration)
+	self.startTime_pet  = start /1000;
+	self.maxValue_pet   = self.startTime + (duration / 1000);
+	self.casting_pet    = nil;
+	self.channeling_pet = true;
+	self.duration_pet   = floor(duration / 100) / 10;
+	
+	_G["Pet_Ring"]:Show();
+end
+
 function Circle_Cast_SpellCast_TargetStart(self, start, name, duration, icon, notI)
 	self.spellname_target  = name;
 	self.startTime_target  = start /1000;
@@ -725,12 +800,12 @@ end
 
 function Circle_Cast_InteruptColor(notI)
 	if notI then
-		for i = 1, 7 do
-			_G["Target_Ring"..CC_parts[i]]:SetVertexColor(Circle_Cast_GetColor("Target_Ring", "InteruptColor"));
+		for _,part in pairs(CC_parts) do
+			_G["Target_Ring"..part]:SetVertexColor(Circle_Cast_GetColor("Target_Ring", "InteruptColor"));
 		end
 	else
-		for i = 1, 7 do
-			_G["Target_Ring"..CC_parts[i]]:SetVertexColor(Circle_Cast_GetColor("Target_Ring"));
+		for _,part in pairs(CC_parts) do
+			_G["Target_Ring"..part]:SetVertexColor(Circle_Cast_GetColor("Target_Ring"));
 		end
 	end
 end
