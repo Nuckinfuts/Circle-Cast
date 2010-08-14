@@ -725,32 +725,60 @@ function CircleCast_SetBarHeight(frame, p, Rev)
     		slice:SetHeight(Iy-Oy)
     		slice:Show()
     	end
-	elseif quadrant == 4 then --inside 4
-		--hides
-		ring4:Hide()
-		--shows
-		ring1:Show()
-		ring2:Show()
-		ring3:Show()
+	elseif quadrant == 4 then --75% < P < 100%
+	    if Rev then
+	        --hides
+    		ring1:Hide()
+    		--shows
+    		ring4:Show()
+    		ring2:Show()
+    		ring3:Show()
+
+    		--partial
+    		red:SetTexCoord(IxCoord, IyCoord, 0, IyCoord, IxCoord, 0, 0, 0)
+    		red:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, SIZE)
+    		red:SetWidth(Iy)
+    		red:SetHeight(Ix)
+    		red:Show()
+
+    		blue:SetTexCoord(OxCoord, OyCoord, IxCoord, OyCoord, OxCoord, 0, IxCoord, 0)
+    		blue:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, SIZE+Ix)
+    		blue:SetWidth(Oy)
+    		blue:SetHeight(Ox-Ix)
+    		blue:Show()
+
+    		slice:SetTexCoord(1, 1, 0, 1, 1, 0, 0, 0)
+    		slice:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -Oy,SIZE+Ix)
+    		slice:SetWidth(Iy-Oy)
+    		slice:SetHeight(Ox-Ix)
+    		slice:Show()
+	    else
+    		--hides
+    		ring4:Hide()
+    		--shows
+    		ring1:Show()
+    		ring2:Show()
+    		ring3:Show()
 		
-		--partial
-		red:SetTexCoord(IxCoord, 0, 0, 0, IxCoord, IyCoord, 0, IyCoord)
-		red:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, SIZE)
-		red:SetWidth(Iy)
-		red:SetHeight(Ix)
-		red:Show()
+    		--partial
+    		red:SetTexCoord(IxCoord, 0, 0, 0, IxCoord, IyCoord, 0, IyCoord)
+    		red:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, SIZE)
+    		red:SetWidth(Iy)
+    		red:SetHeight(Ix)
+    		red:Show()
 		
-		blue:SetTexCoord(OxCoord, 0, IxCoord, 0, OxCoord, OyCoord, IxCoord, OyCoord)
-		blue:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, SIZE+Ix)
-		blue:SetWidth(Oy)
-		blue:SetHeight(Ox-Ix)
-		blue:Show()
+    		blue:SetTexCoord(OxCoord, 0, IxCoord, 0, OxCoord, OyCoord, IxCoord, OyCoord)
+    		blue:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, SIZE+Ix)
+    		blue:SetWidth(Oy)
+    		blue:SetHeight(Ox-Ix)
+    		blue:Show()
 		
-		slice:SetTexCoord(1, 0, 0, 0, 1, 1, 0, 1)
-		slice:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", Oy,SIZE+Ix)
-		slice:SetWidth(Iy-Oy)
-		slice:SetHeight(Ox-Ix)
-		slice:Show()
+    		slice:SetTexCoord(1, 0, 0, 0, 1, 1, 0, 1)
+    		slice:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", Oy,SIZE+Ix)
+    		slice:SetWidth(Iy-Oy)
+    		slice:SetHeight(Ox-Ix)
+    		slice:Show()
+    	end
 	else
 		print("ERROR: Quadrant Exceded 4!");
 	end
