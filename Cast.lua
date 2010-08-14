@@ -408,11 +408,11 @@ function Circle_Cast_OnEvent(self, event, unit)
     elseif event == "PLAYER_LOGOUT" then
         CircleCast_Global["debug"] = false
 	elseif event == "UNIT_SPELLCAST_START" then
-		local _, _, text, icon, startTime, endTime, _, notInterruptible = UnitCastingInfo(unit) 
+		local _, _, text, icon, startTime, endTime, _, notI = UnitCastingInfo(unit) 
 		if unit == "player" and not self.casting and not self.channeling and startTime then
 			Circle_Cast_SpellCast_Start(self, startTime, text, endTime - startTime, icon)
 		elseif unit == "target" and startTime then
-			Circle_Cast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon, notInteruptable)
+			Circle_Cast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon, notI)
 		elseif unit == "pet" and startTime then
 		    Circle_Cast_SpellCast_PetStart(self, startTime, endTime - startTime)
 		end
@@ -450,11 +450,11 @@ function Circle_Cast_OnEvent(self, event, unit)
 			self.maxValue_pet = self.maxValue_pet + delay
 		end
 	elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-		local _, _, text, icon, startTime, endTime = UnitChannelInfo(unit)
+		local _, _, text, icon, startTime, endTime, _, notI = UnitChannelInfo(unit)
 		if unit == "player" and not self.channeling and not self.casting and startTime then
 			Circle_Cast_SpellChannel_Start(self, startTime, text, endTime - startTime, icon)
 		elseif unit == "target" and startTime then
-			Circle_Cast_SpellChannel_TargetStart(self, startTime, text, endTime - startTime, icon)
+			Circle_Cast_SpellChannel_TargetStart(self, startTime, text, endTime - startTime, icon, notI)
 		elseif unit == "pet" and starTime then
 		    Circle_Cast_SpellChannel_PetStart(self, startTime, endTime - startTime)
 		end
@@ -800,6 +800,7 @@ end
 
 function Circle_Cast_InteruptColor(notI)
 	if notI then
+	    ccprint("The spell can't be interrupted!")
 		for _,part in pairs(CC_parts) do
 			_G["Target_Ring"..part]:SetVertexColor(Circle_Cast_GetColor("Target_Ring", "InteruptColor"));
 		end
