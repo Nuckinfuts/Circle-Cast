@@ -485,7 +485,7 @@ end
 function Circle_Cast_Reset_Pet(self)
     self.casting_pet = nil
     self.channeling_pet = nil
-    _G["Pet_Target"]:Hide()
+    _G["Pet_Ring"]:Hide()
 end
 
 function Circle_Cast_OnUpdate(self, elapsed)
