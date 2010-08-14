@@ -1,4 +1,4 @@
-Circle_Cast_Default = {
+CircleCast_Default = {
 	["blizz"] = false,
 	["debug"] = false,
 	["Player_Ring"] = {
@@ -102,15 +102,9 @@ Circle_Cast_Default = {
 local _G = _G
 local CC_parts = {"_Part1", "_Part2", "_Part3", "_Part4", "_Slice", "_Red", "_Blue",}
 local CC_objs  = {"Player_Ring", "Target_Ring", "Pet_Ring"}
-local selF
 
-function Circle_Cast_CreateFrames()
-	for _,obj in pairs(CC_objs) do
-	    Circle_Cast_SetupRing(obj)
-	end
-end
-
-function Circle_Cast_ApplySettings(name)
+--will need to be expanded later when more settings can be changed on the fly
+function CircleCast_ApplySettings(name)
     local opt = CircleCast_Global[name]
     local ring = _G[name]
     
@@ -121,14 +115,14 @@ function Circle_Cast_ApplySettings(name)
     
     --color
     for _,part in pairs(CC_parts) do
-        _G[name..part]:SetVertexColor(Circle_Cast_GetColor(name));
+        _G[name..part]:SetVertexColor(CircleCast_GetColor(name));
     end
     
     --scale
     ring:SetScale(opt["s"])
 end
 
-function Circle_Cast_SetupRing(name)
+function CircleCast_SetupRing(name)
 	local opt = CircleCast_Global[name]
 	local ring = CreateFrame("Frame", name, _G[opt["p"]], "CastRingTemplate")
 
@@ -141,7 +135,7 @@ function Circle_Cast_SetupRing(name)
 	if opt["Ping"] then
 		local ping = CreateFrame("Frame", name.."_Ping", ring, "CastRingTemplate_Simple");
 		for _,part in pairs(CC_parts) do
-			_G[name.."_Ping"..part]:SetVertexColor(Circle_Cast_GetColor(name, "Ping"));
+			_G[name.."_Ping"..part]:SetVertexColor(CircleCast_GetColor(name, "Ping"));
 		end
 		_G[name.."_Ping_Part2"]:SetTexCoord(0, 1, 1, 1, 0, 0, 1, 0);
 		_G[name.."_Ping_Part3"]:SetTexCoord(1, 1, 1, 0, 0, 1, 0, 0);
@@ -164,7 +158,7 @@ function Circle_Cast_SetupRing(name)
 		local timer = ring:CreateFontString(name.."_Timer", "ARTWORK", "GameFontNormal");
 		timer:SetWidth(opt["Timer"]["s"] * opt["Timer"]["w"]);
 		timer:SetHeight(opt["Timer"]["s"] * opt["Timer"]["h"]);
-		timer:SetVertexColor(Circle_Cast_GetColor(name, "Timer"));
+		timer:SetVertexColor(CircleCast_GetColor(name, "Timer"));
 		timer:SetFont("Fonts\\FRIZQT__.TTF", 11 * opt["Timer"]["s"], "OUTLINE")
 		timer:SetPoint(opt["Timer"]["orientA"], _G[opt["Timer"]["frame"]], opt["Timer"]["orientB"], opt["Timer"]["x"], opt["Timer"]["y"]);
 	end
@@ -174,14 +168,14 @@ function Circle_Cast_SetupRing(name)
 		local Text = ring:CreateFontString(name.."_Text", "ARTWORK", "GameFontNormal");
 		Text:SetWidth(opt["Text"]["s"] * opt["Text"]["w"]);
 		Text:SetHeight(opt["Text"]["s"] * opt["Text"]["h"]);
-		Text:SetVertexColor(Circle_Cast_GetColor(name, "Text"));
+		Text:SetVertexColor(CircleCast_GetColor(name, "Text"));
 		Text:SetFont("Fonts\\FRIZQT__.TTF", 11 * opt["Text"]["s"], "OUTLINE")
 		Text:SetPoint(opt["Text"]["orientA"], _G[opt["Text"]["frame"]], opt["Text"]["orientB"], opt["Text"]["x"], opt["Text"]["y"]);
 	end
 	
 	--Color
 	for _,part in pairs(CC_parts) do
-		_G[name..part]:SetVertexColor(Circle_Cast_GetColor(name));
+		_G[name..part]:SetVertexColor(CircleCast_GetColor(name));
 	end
 	
 	--Scale
@@ -192,7 +186,7 @@ function Circle_Cast_SetupRing(name)
 	_G[name]:Hide();
 end
 
-function Circle_Cast_GetColor(index, index2)
+function CircleCast_GetColor(index, index2)
 	local r, g, b, a;
 	
 	if index2 then
@@ -210,7 +204,7 @@ function Circle_Cast_GetColor(index, index2)
 	return r, g, b, a;
 end
 
-function Circle_Cast_OnLoad(self, unit, showTradeSkills)
+function CircleCast_OnLoad(self, unit, showTradeSkills)
 	self:RegisterEvent("UNIT_SPELLCAST_START");
 	self:RegisterEvent("UNIT_SPELLCAST_STOP");
 	self:RegisterEvent("UNIT_SPELLCAST_FAILED");
@@ -295,7 +289,7 @@ function SlashCmdList.CCSLASH(msg, editbox)
 	    end
 	    
 	    CircleCast_Global[obj]["s"] = scl
-	    Circle_Cast_ApplySettings(obj)
+	    CircleCast_ApplySettings(obj)
 	elseif msg:match("shift %a+ %a+ %d+") then
 		-- /CC2 SHIFT [DIRECTION] [PLAYER or TARGET] [PIXELS]
 		msg          = msg:sub(7)
@@ -330,7 +324,7 @@ function SlashCmdList.CCSLASH(msg, editbox)
 		
 		CircleCast_Global[name]["x"] = CircleCast_Global[name]["x"] + x;
 		CircleCast_Global[name]["y"] = CircleCast_Global[name]["y"] + y;
-		Circle_Cast_ApplySettings(name)
+		CircleCast_ApplySettings(name)
 	elseif msg:match("color %a+ %d+ %d+ %d+ %d+") then
 		-- /CC2 COLOR [PLAYER or TARGET or PING] [RED] [GREEN] [BLUE] [ALPHA]
 		msg       = msg:sub(7);
@@ -363,18 +357,18 @@ function SlashCmdList.CCSLASH(msg, editbox)
 		opt["b"] = b
 		opt["a"] = a
 		
-		Circle_Cast_ApplySettings(name)
+		CircleCast_ApplySettings(name)
 	elseif msg == "reset" then
-		CircleCast_Global = Circle_Cast_Default
+		CircleCast_Global = CircleCast_Default
 		for _,obj in pairs(CC_objs) do
-			Circle_Cast_ApplySettings(obj)
+			CircleCast_ApplySettings(obj)
 		end
 	elseif msg == "show" then
 	    CircleCast_Global["debug"] = true
 	    
-	    Circle_Cast_SpellCast_Start(_G["Circle_Cast_Events"], GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
-	    Circle_Cast_SpellCast_TargetStart(_G["Circle_Cast_Events"], GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
-	    Circle_Cast_SpellCast_PetStart(_G["Circle_Cast_Events"], GetTime(), 10000)
+	    CircleCast_SpellCast_Start(_G["CircleCast_Events"], GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
+	    CircleCast_SpellCast_TargetStart(_G["CircleCast_Events"], GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
+	    CircleCast_SpellCast_PetStart(_G["CircleCast_Events"], GetTime(), 10000)
 	else
 		ccprint("Invalid parameter to Circle-Cast");
 	end
@@ -384,12 +378,12 @@ function ccprint(msg)
     print("|cff008800<CircleCast>|r "..msg)
 end
 
-function Circle_Cast_OnEvent(self, event, unit)
+function CircleCast_OnEvent(self, event, unit)
     --ccprint(event.." Fired "..unit)
     if event == "ADDON_LOADED" and unit == "Circle-Cast" then
         if CircleCast_Global == nil then
             ccprint("Defaults Loaded")
-    		CircleCast_Global = Circle_Cast_Default
+    		CircleCast_Global = CircleCast_Default
     	end
     	
     	if not CircleCast_Global["blizz"] then
@@ -404,34 +398,37 @@ function Circle_Cast_OnEvent(self, event, unit)
     		CastingBarFrame:Hide();
     	end
     	
-    	Circle_Cast_CreateFrames()
+    	--cycle through the objects listed and make 'em!
+    	for _,obj in pairs(CC_objs) do
+    	    CircleCast_SetupRing(obj)
+    	end
     elseif event == "PLAYER_LOGOUT" then
         CircleCast_Global["debug"] = false
 	elseif event == "UNIT_SPELLCAST_START" then
 		local _, _, text, icon, startTime, endTime, _, notI = UnitCastingInfo(unit) 
 		if unit == "player" and not self.casting and not self.channeling and startTime then
-			Circle_Cast_SpellCast_Start(self, startTime, text, endTime - startTime, icon)
+			CircleCast_SpellCast_Start(self, startTime, text, endTime - startTime, icon)
 		elseif unit == "target" and startTime then
-			Circle_Cast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon, notI)
+			CircleCast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon, notI)
 		elseif unit == "pet" and startTime then
-		    Circle_Cast_SpellCast_PetStart(self, startTime, endTime - startTime)
+		    CircleCast_SpellCast_PetStart(self, startTime, endTime - startTime)
 		end
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
 		if unit == "player" then
-			Circle_Cast_Reset(self)
+			CircleCast_Reset(self)
 		elseif unit == "target" then
-			Circle_Cast_Reset_Target(self)
+			CircleCast_Reset_Target(self)
 		elseif unit == "pet" then
-		    Circle_Cast_Reset_Pet(self)
+		    CircleCast_Reset_Pet(self)
 		end
 	--let's save the cheerleader...
 	elseif event == "UNIT_TARGET" and unit == "player" then
-		Circle_Cast_Reset_Target(self)
+		CircleCast_Reset_Target(self)
 		
 		if UnitExists("target") then
 			local _, _, text, icon, startTime, endTime = UnitCastingInfo("target")
 			if startTime then
-				Circle_Cast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon)
+				CircleCast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon)
 			end
 		end
 	elseif event == "UNIT_SPELLCAST_DELAYED" then
@@ -452,11 +449,11 @@ function Circle_Cast_OnEvent(self, event, unit)
 	elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		local _, _, text, icon, startTime, endTime, _, notI = UnitChannelInfo(unit)
 		if unit == "player" and not self.channeling and not self.casting and startTime then
-			Circle_Cast_SpellChannel_Start(self, startTime, text, endTime - startTime, icon)
+			CircleCast_SpellChannel_Start(self, startTime, text, endTime - startTime, icon)
 		elseif unit == "target" and startTime then
-			Circle_Cast_SpellChannel_TargetStart(self, startTime, text, endTime - startTime, icon, notI)
+			CircleCast_SpellChannel_TargetStart(self, startTime, text, endTime - startTime, icon, notI)
 		elseif unit == "pet" and starTime then
-		    Circle_Cast_SpellChannel_PetStart(self, startTime, endTime - startTime)
+		    CircleCast_SpellChannel_PetStart(self, startTime, endTime - startTime)
 		end
 	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
 		local _, _, _, _, _, endTime = UnitChannelInfo(unit);
@@ -470,25 +467,25 @@ function Circle_Cast_OnEvent(self, event, unit)
 	end
 end
 
-function Circle_Cast_Reset(self)
+function CircleCast_Reset(self)
 	self.casting = nil;
 	self.channeling = nil;
 	_G["Player_Ring"]:Hide();
 end
 
-function Circle_Cast_Reset_Target(self)
+function CircleCast_Reset_Target(self)
 	self.casting_target = nil;
 	self.channeling_target = nil;
 	_G["Target_Ring"]:Hide();
 end
 
-function Circle_Cast_Reset_Pet(self)
+function CircleCast_Reset_Pet(self)
     self.casting_pet = nil
     self.channeling_pet = nil
     _G["Pet_Ring"]:Hide()
 end
 
-function Circle_Cast_OnUpdate(self, elapsed)
+function CircleCast_OnUpdate(self, elapsed)
 	if self.casting or self.channeling then
 		local time = GetTime();
 		if (time > self.maxValue) then
@@ -498,9 +495,9 @@ function Circle_Cast_OnUpdate(self, elapsed)
 		local v = (time - self.startTime) / (self.maxValue - self.startTime) * 100
 		_G["Player_Ring_Timer"]:SetText(string.format("(%.1f)", timeLeft))
 		if self.casting and not self.channeling then
-			Circle_Cast_SetBarHeight(_G["Player_Ring"], v)
+			CircleCast_SetBarHeight(_G["Player_Ring"], v)
 		elseif self.channeling and not self.casting then
-			Circle_Cast_SetBarHeight(_G["Player_Ring"], 100-v)
+			CircleCast_SetBarHeight(_G["Player_Ring"], 100-v)
 		end
 	end
 	
@@ -511,9 +508,9 @@ function Circle_Cast_OnUpdate(self, elapsed)
 	    end
 	    local v = (time - self.startTime_pet) / (self.maxValue_pet - self.startTime_pet) * 100
 	    if self.casting_pet and not self.channeling_pet then
-	        Circle_Cast_SetBarHeight(_G["Pet_Ring"], v)
+	        CircleCast_SetBarHeight(_G["Pet_Ring"], v)
 	    elseif self.channeling_pet and not self.casting_pet then
-	        Circle_Cast_SetBarHeight(_G["Pet_Ring"], 100-v)
+	        CircleCast_SetBarHeight(_G["Pet_Ring"], 100-v)
 	    end
 	end
 
@@ -528,66 +525,69 @@ function Circle_Cast_OnUpdate(self, elapsed)
 		_G["Target_Ring_Text"]:SetText(self.spellname_target)
 		_G["Target_Ring_Timer"]:SetText(string.format("(%.1f)", timeLeft))
 		if self.casting_target and not self.channeling_target then
-			Circle_Cast_SetBarHeight(_G["Target_Ring"], v)
+			CircleCast_SetBarHeight(_G["Target_Ring"], v)
 		elseif self.channeling_target and not self.casting_target then
-			Circle_Cast_SetBarHeight(_G["Target_Ring"], 100-v)
+			CircleCast_SetBarHeight(_G["Target_Ring"], 100-v)
 		end
 	end
 end
 
-function Circle_Cast_SetBarHeight(frame, p, Rev)
-	local ring1 = _G[frame:GetName().."_Part1"];
-	local ring2 = _G[frame:GetName().."_Part2"];
-	local ring3 = _G[frame:GetName().."_Part3"];
-	local ring4 = _G[frame:GetName().."_Part4"];
-	local slice = _G[frame:GetName().."_Slice"];
-	local red   = _G[frame:GetName().."_Red"];
-	local blue  = _G[frame:GetName().."_Blue"];
+function CircleCast_SetBarHeight(frame, p, Rev)
+	local ring1 = _G[frame:GetName().."_Part1"]
+	local ring2 = _G[frame:GetName().."_Part2"]
+	local ring3 = _G[frame:GetName().."_Part3"]
+	local ring4 = _G[frame:GetName().."_Part4"]
+	local slice = _G[frame:GetName().."_Slice"]
+	local red   = _G[frame:GetName().."_Red"]
+	local blue  = _G[frame:GetName().."_Blue"]
 	
 	--fix down the percent
-	local quadrant = math.ceil(p / 25);
+	local quadrant = math.ceil(p / 25)
 	if quadrant == 2 then
-		p = p - 25;
+		p = p - 25
 	elseif quadrant == 3 then
-		p = p - 50;
+		p = p - 50
 	elseif quadrant == 4 then
-		p = p - 75;
+		p = p - 75
 	end
 	
 	--constants because of texture
-	local IR = 90; --Inner Radius
-	local OR = 110; --Outer Radius
-	local SIZE = 128;
+	local IR = 90 --Inner Radius
+	local OR = 110 --Outer Radius
+	local SIZE = 128
+	--if an orb
+	--IR = 1
+	--end
 	
 	--trig time
-	local degree = (p * 360) / 100;
-	local radian = math.rad(degree);
-	local Ix = math.sin(radian) * IR;
-	local Iy = SIZE - math.cos(radian) * IR;
-	local Ox = math.sin(radian) * OR;
-	local Oy = SIZE - math.cos(radian) * OR;
-	local IxCoord = Ix / SIZE;
-	local IyCoord = Iy / SIZE;
-	local OxCoord = Ox / SIZE;
-	local OyCoord = Oy / SIZE;
+	local degree = (p * 360) / 100
+	local radian = math.rad(degree)
+	local Ix = math.sin(radian) * IR
+	local Iy = SIZE - math.cos(radian) * IR
+	local Ox = math.sin(radian) * OR
+	local Oy = SIZE - math.cos(radian) * OR
+	local IxCoord = Ix / SIZE
+	local IyCoord = Iy / SIZE
+	local OxCoord = Ox / SIZE
+	local OyCoord = Oy / SIZE
 	
-	red:ClearAllPoints();
-	blue:ClearAllPoints();
-	slice:ClearAllPoints();
+	red:ClearAllPoints()
+	blue:ClearAllPoints()
+	slice:ClearAllPoints()
 	
 	if(p <= 0 or p > 100) then
-		ring1:Hide();
-		ring2:Hide();
-		ring3:Hide();
-		ring4:Hide();
+		ring1:Hide()
+		ring2:Hide()
+		ring3:Hide()
+		ring4:Hide()
 		return;
-	elseif quadrant == 1 then --inside 1
-		--hides
-		ring1:Hide();
-		ring2:Hide();
-		ring3:Hide();
-		ring4:Hide();
-		if Rev then
+	elseif quadrant == 1 then --0% < P < 25%
+		--no whole quadrants are done, so lets hide them all!
+		ring1:Hide()
+		ring2:Hide()
+		ring3:Hide()
+		ring4:Hide()
+		if Rev then --mainly for drawing ping values
 			red:SetTexCoord(IxCoord, 0, IxCoord, IyCoord, 0, 0, 0, IyCoord);
 			red:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -SIZE, 0);
 			red:SetWidth(Ix);
@@ -624,60 +624,82 @@ function Circle_Cast_SetBarHeight(frame, p, Rev)
 			slice:SetHeight(Iy-Oy);
 			slice:Show();
 		end
-	elseif quadrant == 2 then --inside 2
+	elseif quadrant == 2 then --25% < P < 50%
 		if Rev then
+		    ring4:Show()
+		    ring1:Hide()
+		    ring2:Hide()
+		    ring3:Hide()
+		    
+			red:SetTexCoord(0, IyCoord, IxCoord, IyCoord, 0, 0, IxCoord, 0)
+			red:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -SIZE)
+			red:SetWidth(Iy)
+			red:SetHeight(Ix)
+			red:Show()
+			
+			blue:SetTexCoord(IxCoord, OyCoord, OxCoord, OyCoord, IxCoord, 0, OxCoord, 0)
+			blue:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -SIZE-Ix)
+			blue:SetWidth(Oy)
+			blue:SetHeight(Ox-Ix)
+			blue:Show()
+
+			slice:SetTexCoord(0, 1, 1, 1, 0, 0, 1, 0)
+			slice:SetPoint("TOPLEFT", frame, "TOPLEFT", -Oy,-SIZE-Ix)
+			slice:SetWidth(Iy-Oy)
+			slice:SetHeight(Ox-Ix)
+			slice:Show()
 		else
 			--hides
-			ring2:Hide();
-			ring3:Hide();
-			ring4:Hide();
+			ring2:Hide()
+			ring3:Hide()
+			ring4:Hide()
 			--shows
-			ring1:Show();
+			ring1:Show()
 			
-			red:SetTexCoord(0, IyCoord, IxCoord, IyCoord, 0, 0, IxCoord, 0);
-			red:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -SIZE);
-			red:SetWidth(Iy);
-			red:SetHeight(Ix);
-			red:Show();
+			red:SetTexCoord(0, IyCoord, IxCoord, IyCoord, 0, 0, IxCoord, 0)
+			red:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -SIZE)
+			red:SetWidth(Iy)
+			red:SetHeight(Ix)
+			red:Show()
 			
-			blue:SetTexCoord(IxCoord, OyCoord, OxCoord, OyCoord, IxCoord, 0, OxCoord, 0);
-			blue:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -SIZE-Ix);
-			blue:SetWidth(Oy);
-			blue:SetHeight(Ox-Ix);
-			blue:Show();
+			blue:SetTexCoord(IxCoord, OyCoord, OxCoord, OyCoord, IxCoord, 0, OxCoord, 0)
+			blue:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -SIZE-Ix)
+			blue:SetWidth(Oy)
+			blue:SetHeight(Ox-Ix)
+			blue:Show()
 
-			slice:SetTexCoord(0, 1, 1, 1, 0, 0, 1, 0);
-			slice:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -Oy,-SIZE-Ix);
-			slice:SetWidth(Iy-Oy);
-			slice:SetHeight(Ox-Ix);
-			slice:Show();
+			slice:SetTexCoord(0, 1, 1, 1, 0, 0, 1, 0)
+			slice:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -Oy,-SIZE-Ix)
+			slice:SetWidth(Iy-Oy)
+			slice:SetHeight(Ox-Ix)
+			slice:Show()
 		end
 	elseif quadrant == 3 then --inside 3
 		--hides
-		ring3:Hide();
-		ring4:Hide();
+		ring3:Hide()
+		ring4:Hide()
 		--shows
-		ring1:Show();
-		ring2:Show();
+		ring1:Show()
+		ring2:Show()
 		
 		--partial
-		red:SetTexCoord(IxCoord, IyCoord, IxCoord, 0, 0, IyCoord, 0, 0);
-		red:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SIZE, 0);
-		red:SetWidth(Ix);
-		red:SetHeight(Iy);
-		red:Show();
+		red:SetTexCoord(IxCoord, IyCoord, IxCoord, 0, 0, IyCoord, 0, 0)
+		red:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SIZE, 0)
+		red:SetWidth(Ix)
+		red:SetHeight(Iy)
+		red:Show()
 		
-		blue:SetTexCoord(OxCoord, OyCoord, OxCoord, 0, IxCoord, OyCoord, IxCoord, 0);
-		blue:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SIZE-Ix, 0);
-		blue:SetWidth(Ox-Ix);
-		blue:SetHeight(Oy);
-		blue:Show();
+		blue:SetTexCoord(OxCoord, OyCoord, OxCoord, 0, IxCoord, OyCoord, IxCoord, 0)
+		blue:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SIZE-Ix, 0)
+		blue:SetWidth(Ox-Ix)
+		blue:SetHeight(Oy)
+		blue:Show()
 		
-		slice:SetTexCoord(1, 1, 1, 0, 0, 1, 0, 0);
-		slice:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SIZE-Ix,Oy);
-		slice:SetWidth(Ox-Ix);
-		slice:SetHeight(Iy-Oy);
-		slice:Show(); 
+		slice:SetTexCoord(1, 1, 1, 0, 0, 1, 0, 0)
+		slice:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SIZE-Ix,Oy)
+		slice:SetWidth(Ox-Ix)
+		slice:SetHeight(Iy-Oy)
+		slice:Show()
 	elseif quadrant == 4 then --inside 4
 		--hides
 		ring4:Hide();
@@ -716,7 +738,7 @@ function Circle_Cast_SetBarHeight(frame, p, Rev)
 	end
 end
 
-function Circle_Cast_SpellCast_Start(self, start, name, duration, icon)
+function CircleCast_SpellCast_Start(self, start, name, duration, icon)
 	self.spellname  = name;
 	self.startTime  = start /1000;
 	self.maxValue   = self.startTime + (duration / 1000);
@@ -731,10 +753,10 @@ function Circle_Cast_SpellCast_Start(self, start, name, duration, icon)
 	
 	local _, _, lag = GetNetStats();
 	local ping = ((lag / 1000) / self.duration) * 100;
-	Circle_Cast_SetBarHeight(_G["Player_Ring_Ping"], ping, true);
+	CircleCast_SetBarHeight(_G["Player_Ring_Ping"], ping, true);
 end
 
-function Circle_Cast_SpellChannel_Start(self, start, name, duration, icon)
+function CircleCast_SpellChannel_Start(self, start, name, duration, icon)
 	self.spellname  = name;
 	self.startTime  = start /1000;
 	self.maxValue   = self.startTime + (duration / 1000);
@@ -749,10 +771,10 @@ function Circle_Cast_SpellChannel_Start(self, start, name, duration, icon)
 	
 	local _, _, lag = GetNetStats();
 	local ping = ((lag / 1000) / self.duration) * 100;
-	Circle_Cast_SetBarHeight(_G["Player_Ring_Ping"], ping);
+	CircleCast_SetBarHeight(_G["Player_Ring_Ping"], ping);
 end 
 
-function Circle_Cast_SpellCast_PetStart(self, start, duration)
+function CircleCast_SpellCast_PetStart(self, start, duration)
 	self.startTime_pet  = start /1000;
 	self.maxValue_pet   = self.startTime + (duration / 1000);
 	self.casting_pet    = true;
@@ -762,7 +784,7 @@ function Circle_Cast_SpellCast_PetStart(self, start, duration)
 	_G["Pet_Ring"]:Show();
 end
 
-function Circle_Cast_SpellChannel_PetStart(self, start, duration)
+function CircleCast_SpellChannel_PetStart(self, start, duration)
 	self.startTime_pet  = start /1000;
 	self.maxValue_pet   = self.startTime + (duration / 1000);
 	self.casting_pet    = nil;
@@ -772,7 +794,7 @@ function Circle_Cast_SpellChannel_PetStart(self, start, duration)
 	_G["Pet_Ring"]:Show();
 end
 
-function Circle_Cast_SpellCast_TargetStart(self, start, name, duration, icon, notI)
+function CircleCast_SpellCast_TargetStart(self, start, name, duration, icon, notI)
 	self.spellname_target  = name;
 	self.startTime_target  = start /1000;
 	self.maxValue_target   = self.startTime_target + (duration / 1000);
@@ -780,12 +802,12 @@ function Circle_Cast_SpellCast_TargetStart(self, start, name, duration, icon, no
 	self.channeling_target = nil;
 	self.duration_target   = floor(duration / 100) / 10;
 	
-	Circle_Cast_InteruptColor(notI)
+	CircleCast_InteruptColor(notI)
 	
 	_G["Target_Ring"]:Show();
 end 
 
-function Circle_Cast_SpellChannel_TargetStart(self, start, name, duration, icon, notI)
+function CircleCast_SpellChannel_TargetStart(self, start, name, duration, icon, notI)
 	self.spellname_target  = name;
 	self.startTime_target  = start /1000;
 	self.maxValue_target   = self.startTime_target + (duration / 1000);
@@ -793,20 +815,20 @@ function Circle_Cast_SpellChannel_TargetStart(self, start, name, duration, icon,
 	self.channeling_target = true;
 	self.duration_target   = floor(duration / 100) / 10;
 	
-	Circle_Cast_InteruptColor(notI)
+	CircleCast_InteruptColor(notI)
 	
 	_G["Target_Ring"]:Show();
 end
 
-function Circle_Cast_InteruptColor(notI)
+function CircleCast_InteruptColor(notI)
 	if notI then
 	    ccprint("The spell can't be interrupted!")
 		for _,part in pairs(CC_parts) do
-			_G["Target_Ring"..part]:SetVertexColor(Circle_Cast_GetColor("Target_Ring", "InteruptColor"));
+			_G["Target_Ring"..part]:SetVertexColor(CircleCast_GetColor("Target_Ring", "InteruptColor"));
 		end
 	else
 		for _,part in pairs(CC_parts) do
-			_G["Target_Ring"..part]:SetVertexColor(Circle_Cast_GetColor("Target_Ring"));
+			_G["Target_Ring"..part]:SetVertexColor(CircleCast_GetColor("Target_Ring"));
 		end
 	end
 end
