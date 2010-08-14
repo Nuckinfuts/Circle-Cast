@@ -61,9 +61,9 @@ Circle_Cast_Default = {
 		["y"] = 0,
 		["p"] = "UIParent",
 		["InteruptColor"] = {
-			["r"] = 0,
-			["g"] = 0,
-			["b"] = 0,
+			["r"] = 1,
+			["g"] = 1,
+			["b"] = 1,
 			["a"] = 0.3,
 			},
 		["Icon"] = nil,
