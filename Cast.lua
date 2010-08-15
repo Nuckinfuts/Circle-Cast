@@ -699,13 +699,13 @@ function CircleCast_SetBarHeight(frame, p, Rev)
     		slice:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SIZE-Ix,Oy)
     	end
 	elseif quadrant == 4 then --75% < P < 100%
+	    --the overlap of Rev and not Rev
+	    ring2:Show()
+		ring3:Show()
+	    
 	    if Rev then
-	        --hides
     		ring1:Hide()
-    		--shows
     		ring4:Show()
-    		ring2:Show()
-    		ring3:Show()
 
     		--partial
     		red:SetTexCoord(IxCoord, IyCoord, 0, IyCoord, IxCoord, 0, 0, 0)
@@ -726,12 +726,8 @@ function CircleCast_SetBarHeight(frame, p, Rev)
     		slice:SetHeight(Ox-Ix)
     		slice:Show()
 	    else
-    		--hides
     		ring4:Hide()
-    		--shows
     		ring1:Show()
-    		ring2:Show()
-    		ring3:Show()
 		
     		--partial
     		red:SetTexCoord(IxCoord, 0, 0, 0, IxCoord, IyCoord, 0, IyCoord)
