@@ -843,8 +843,8 @@ function CircleCast_SpellChannel_TargetStart(self, start, name, duration, icon, 
 end
 
 function CircleCast_InteruptColor(notI)
-	if notI then
-	    ccprint("The spell can't be interrupted!")
+	if notI == true or notI == 1 then
+	    --ccprint("The spell can't be interrupted!")
 		for _,part in pairs(CC_parts) do
 			_G["Target_Ring"..part]:SetVertexColor(CircleCast_GetColor("Target_Ring", "InteruptColor"));
 		end
