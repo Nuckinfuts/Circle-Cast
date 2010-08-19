@@ -30,7 +30,7 @@ CircleCast_Default = {
 			["a"] = 1.0,
 			["s"] = 1.0,
 			["h"] = 20,
-			["w"] = 50,
+			["w"] = 60,
 			["frame"] = "Player_Ring_Icon",  --Frame to anchor to
 			["orientA"] = "TOP",             --This frame's anchor
 			["orientB"] = "BOTTOM",          --Other frame's anchor
@@ -410,7 +410,7 @@ function CircleCast_OnEvent(self, event, unit)
 			CircleCast_SpellCast_Start(self, startTime, text, endTime - startTime, icon)
 		elseif unit == "target" and startTime then
 			CircleCast_SpellCast_TargetStart(self, startTime, text, endTime - startTime, icon, notI)
-		elseif unit == "pet" and startTime then
+		elseif (unit == "pet" or unit == "vehicle") and startTime then
 		    CircleCast_SpellCast_PetStart(self, startTime, endTime - startTime)
 		end
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
@@ -418,7 +418,7 @@ function CircleCast_OnEvent(self, event, unit)
 			CircleCast_ResetPlayer(self)
 		elseif unit == "target" then
 			CircleCast_ResetTarget(self)
-		elseif unit == "pet" then
+		elseif unit == "pet" or unit == "vehicle" then
 		    CircleCast_ResetPet(self)
 		end
 	--let's save the cheerleader...
