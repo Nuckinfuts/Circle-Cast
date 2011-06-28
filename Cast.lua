@@ -260,18 +260,18 @@ function SlashCmdList.CCSLASH(msg, editbox)
 	elseif msg == "scale help" or msg == "scale" then
 	    ccprint("### "..ccSlashTitle("Circle-Cast Scale Help").." ###")
 	    ccprint(ccSlashStatic("/CC SCALE").." "..ccSlashVar("OBJECT AMOUNT"))
-	    ccprint(ccSlashVar("OBJECT").." must be player or target")
+	    ccprint(ccSlashVar("OBJECT").." must be player, target or pet")
 	    ccprint(ccSlashVar("AMOUNT").." must be a decimal value (2.0 = 200%)")
 	elseif msg == "shift help" or msg == "shift" then
 		ccprint("### "..ccSlashTitle("Circle-Cast Shift Help").." ###")
 		ccprint(ccSlashStatic("/CC SHIFT").." "..ccSlashVar("DIRECTION OBJECT PIXELS"))
 		ccprint(ccSlashVar("DIRECTION").." must be up, down, left or right")
-		ccprint(ccSlashVar("OBJECT").." must be player or target")
+		ccprint(ccSlashVar("OBJECT").." must be player, target, or pet")
 		ccprint(ccSlashVar("PIXELS").." must be an integer")
 	elseif msg == "color help" or msg == "color" then
 		ccprint("### "..ccSlashTitle("Cicle-Cast Color Help").." ###")
 		ccprint(ccSlashStatic("/CC COLOR").." "..ccSlashVar("OBJECT RED GREEN BLUE ALPHA"))
-		ccprint(ccSlashVar("OBJECT").." must be player, target, or ping")
+		ccprint(ccSlashVar("OBJECT").." must be player, target, pet, or ping")
 		ccprint(ccSlashVar("RED").."/"..ccSlashVar("GREEN").."/"..ccSlashVar("BLUE").."/"..ccSlashVar("ALPHA").." must all be a number between or equal to 0 and 255")
 		ccprint(ccSlashVar("ALPHA").." is the level of transparency, 0 being completely clear and 255 being completely solid")
 	elseif msg:match("scale %a+ %d+") then
