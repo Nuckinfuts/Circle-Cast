@@ -555,9 +555,6 @@ function CircleCast_SetBarHeight(frame, p, Rev)
 	local IR = 90 --Inner Radius
 	local OR = 110 --Outer Radius
 	local SIZE = 128
-	--if an orb
-	--IR = 1
-	--end
 	
 	--trig time
 	local degree = (p * 360) / 100
@@ -844,7 +841,6 @@ end
 
 function CircleCast_InteruptColor(notI)
 	if notI == true or notI == 1 then
-	    --ccprint("The spell can't be interrupted!")
 		for _,part in pairs(CC_parts) do
 			_G["Target_Ring"..part]:SetVertexColor(CircleCast_GetColor("Target_Ring", "InteruptColor"));
 		end
