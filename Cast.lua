@@ -364,15 +364,8 @@ function SlashCmdList.CCSLASH(msg, editbox)
 			CircleCast_ApplySettings(obj)
 		end
 	elseif msg == "toggle" then
-	    local allShown = true
-	    for ring in CC_objs do
-	        if not _G[ring]:isVisible() then
-	            allShown = false
-	        end
-	    end
-	    
 	    local self = _G["CircleCast_Events"]
-	    if allShown then
+	    if _G["Player_Ring"]:IsVisible() then
 	        --hide them and turn off debug
 	        CircleCast_Global["debug"] = false
 	        
