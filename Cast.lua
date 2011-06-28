@@ -255,7 +255,7 @@ function SlashCmdList.CCSLASH(msg, editbox)
 		ccprint(ccSlashStatic("/cc shift").." -- shift the rings position ("..ccSlashStatic("/cc shift help").." for more info)")
 		ccprint(ccSlashStatic("/cc color").." -- select new colors for the rings ("..ccSlashStatic("/cc color help").." for more info)")
 		ccprint(ccSlashStatic("/cc scale").." -- set the scale of the rings ("..ccSlashStatic("/cc scale help").." for more info)")
-		ccprint(ccSlashStatic("/cc show") .." -- shows all frames to ease configuration")
+		ccprint(ccSlashStatic("/cc toggle") .." -- toggles showing all frames to ease configuration")
 		ccprint(ccSlashStatic("/cc reset").." -- restore default position and colors")
 	elseif msg == "scale help" or msg == "scale" then
 	    ccprint("### "..ccSlashTitle("Circle-Cast Scale Help").." ###")
@@ -363,12 +363,29 @@ function SlashCmdList.CCSLASH(msg, editbox)
 		for _,obj in pairs(CC_objs) do
 			CircleCast_ApplySettings(obj)
 		end
-	elseif msg == "show" then
-	    CircleCast_Global["debug"] = true
+	elseif msg == "toggle" then
+	    local allShown = true
+	    for ring in CC_objs do
+	        if not _G[ring]:isVisible() then
+	            allShown = false
+	        end
+	    end
 	    
-	    CircleCast_SpellCast_Start(_G["CircleCast_Events"], GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
-	    CircleCast_SpellCast_TargetStart(_G["CircleCast_Events"], GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
-	    CircleCast_SpellCast_PetStart(_G["CircleCast_Events"], GetTime(), 10000)
+	    local self = _G["CircleCast_Events"]
+	    if allShown then
+	        --hide them and turn off debug
+	        CircleCast_Global["debug"] = false
+	        
+	        CircleCast_ResetPlayer(self)
+	        CircleCast_ResetTarget(self)
+	        CircleCast_ResetPet(self)
+	    else
+    	    CircleCast_Global["debug"] = true
+	    
+    	    CircleCast_SpellCast_Start(self, GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
+    	    CircleCast_SpellCast_TargetStart(self, GetTime(), "Awesome Crit Spell", 10000, "Interface\\Icons\\Ability_Ambush")
+    	    CircleCast_SpellCast_PetStart(self, GetTime(), 10000)
+    	end
 	else
 		ccprint("Invalid parameter to Circle-Cast");
 	end
@@ -379,7 +396,6 @@ function ccprint(msg)
 end
 
 function CircleCast_OnEvent(self, event, unit)
-    --ccprint(event.." Fired "..unit)
     if event == "ADDON_LOADED" and unit == "Circle-Cast" then
         if CircleCast_Global == nil then
             ccprint("Defaults Loaded")
