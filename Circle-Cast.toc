@@ -1,8 +1,8 @@
-## Interface: 30300
+## Interface: 40200
 ## Title: Circle Cast
 ## Author: Greg Flynn (Nuckin)
 ## Notes: A Circular Casting Bar
-## Version: 3.0 Alpha
+## Version: 3.0 Beta
 ## SavedVariables: CircleCast_Global
 ## SavedVariablesPerCharacter: CircleCast_Local
 Cast.lua
